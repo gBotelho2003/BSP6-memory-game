@@ -1,4 +1,4 @@
-# BSP6-memory-game
+# BSP6-memory-game: Hidden Path
 BSP6 project about induced stress on user performance when playing memory games
 ## 3 Versions:
 
