@@ -8,10 +8,17 @@
 }
 
 #tutorial{
-    font-size: 2.5rem;
+    padding: 15px 25px;
+  font-size: 30px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  border: 2px solid #333;
+  border-radius: 10px;
+  cursor: pointer;
     
 }
 h1{
     text-align: center;
+    padding-top: 50px;
+    font-size: 50px;
     
 }
