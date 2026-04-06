@@ -10,7 +10,7 @@
 }
 
 
-#level{
+#level1, #level2, #level3{
   padding: 15px 25px;
   font-size: 30px;
   font-family: "Lucida Console", "Courier New", monospace;

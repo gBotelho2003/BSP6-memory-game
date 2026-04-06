@@ -74,6 +74,7 @@ p {
 	background-color: lightgray;
 	border: 2px solid rgb(250, 248, 248);
     font-size: 35px;
+    color: #333;
     justify-content: center;
     align-items: center; 
     font-weight: bolder;
