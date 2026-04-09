@@ -5,7 +5,7 @@
 
     <!--Link css files-->
     <link rel="stylesheet" href="/V1/Game/gamePage.css">
-    
+
 
 
     <!--Title of the game-->
@@ -16,6 +16,7 @@
 
 <body>
     <h1>Level 1</h1>
+
 
     <div class="game-layout">
 
@@ -30,51 +31,76 @@
 
             <div class="leaderboard-row">
                 <span>Gabriel</span>
-                <span>00:18</span>
+                <span>00:11</span>
                 <span>120</span>
             </div>
 
             <div class="leaderboard-row">
                 <span>Bruno</span>
-                <span>00:21</span>
+                <span>00:10</span>
                 <span>105</span>
             </div>
 
             <div class="leaderboard-row">
                 <span>Jon</span>
-                <span>00:24</span>
+                <span>00:09</span>
                 <span>95</span>
             </div>
             <div class="leaderboard-row">
                 <span>Ana</span>
-                <span>00:25</span>
+                <span>00:07</span>
                 <span>85</span>
             </div>
             <div class="leaderboard-row">
                 <span>Mike</span>
-                <span>00:25</span>
+                <span>00:05</span>
                 <span>85</span>
             </div>
         </div>
 
-        <div class="grid4by3">
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
+        <div class="game-area">
 
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
+            <div class="top-bar">
+                <div class="timer">
+                    <p id="timer">00:00</p>
+                </div>
 
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
+                <div class="score">
+                    <p id="playerScore">0</p>
+                </div>
+            </div>
+
+            <div class="grid3by3">
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+            </div>
+
         </div>
 
     </div>
+
+    <!-- Level complete popup -->
+    <div id="levelPopup" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2>Level Complete!</h2>
+            <p id="timeOver"></p>
+            <p id="popupMessage"></p>
+
+            <div class="popup-buttons">
+                <button onclick="location.href='/V1/Level/levelPage.html'">Back to Levels</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 <script src="/V1/Game/game.js"></script>

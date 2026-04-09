@@ -10,7 +10,7 @@
 }
 
 
-#level1, #level2, #level3{
+#level1, #level2, #level3, #reset {
   padding: 15px 25px;
   font-size: 30px;
   font-family: "Lucida Console", "Courier New", monospace;

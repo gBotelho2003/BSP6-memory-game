@@ -6,7 +6,9 @@ body {
     color: white;
     background-color: #0a0a0a;
 
-/* layered diagonal stripes for a subtle textured background */
+/*  hidden as to not distract from the game when conducting user testing 
+    
+    layered diagonal stripes for a subtle textured background 
     background-image:
         repeating-linear-gradient(
             120deg,
@@ -35,7 +37,9 @@ body {
             transparent 226px,
             transparent 420px
         );
+        */
 }
+        
 
 h1 {
     text-align: center;
@@ -54,18 +58,18 @@ p {
 
 
 
-.grid4by3{
+.grid3by3{
 
     display: grid;
-	grid-template-columns: repeat(4, 140px);
+	grid-template-columns: repeat(3, 140px);
 	grid-template-rows: repeat(3, 140px);
 
     grid-gap: 20px;
 
-    text-align: center;
+    
     justify-content: center;
     align-content: center;
-    margin-left: 8%;
+    
 
 }
 
@@ -95,6 +99,22 @@ p {
     gap: 80px;
     margin-top: 50px;
     padding: 0 50px 50px 50px;
+}
+
+.game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 11%;
+    gap: 30px;
+}
+
+.top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
 }
 
 /* leaderboard styles */
@@ -150,3 +170,96 @@ p {
     border: 1px solid rgba(255, 153, 0, 0.35);
     background: rgba(255, 153, 0, 0.08);
 }
+
+.timer, .score {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 153, 0, 0.25);
+    border-radius: 16px;
+    padding: 15px 25px;
+    min-width: 140px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+#timer, #playerScore {
+    font-size: 2rem;
+    font-weight: bold;
+    color: hsl(34, 94%, 51%);
+    margin: 0;
+}
+
+/* popup overlay */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* hide popup initially */
+.hidden {
+    display: none;
+}
+
+/* popup box */
+.popup-box {
+    background: #111;
+    border: 1px solid rgba(255, 153, 0, 0.35);
+    border-radius: 20px;
+    padding: 35px 40px;
+    text-align: center;
+    min-width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    animation: popupFade 0.25s ease;
+}
+
+.popup-box h2 {
+    margin-top: 0;
+    color: hsl(34, 94%, 51%);
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.popup-box p {
+    color: #ddd;
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.popup-buttons button {
+    background: hsl(34, 94%, 51%);
+    color: black;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 22px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.popup-buttons button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
