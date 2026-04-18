@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <!--Link css files-->
+        <link rel="stylesheet" href="/V2/Level/levelPage.css">
+        <link rel="stylesheet" href="/V2/main.css">
+
+
+        <!--Title of the game-->
+        <title>Hidden Path</title>
+
+        <h1>Levels</h1>
+
+    </head>
+
+    <body>
+        <button class="back-btn" onclick="location.href='/V2/Tutorial/tutorialPage.html'">← Back</button>
+
+        <div class="button-wrapper">
+            <div class="buttons">
+                <button type="button" id="level1" onclick="difficulty(1)">Level 1</button>
+                <button type="button" id="level2" onclick="difficulty(2)">Level 2</button>
+                <button type="button" id="level3" onclick="difficulty(3)">Level 3</button>
+                <button type="button" id="reset" onclick="resetGame()">Reset</button>
+                
+                </div>
+        </div>
+        
+    </body>
+    <script src="/V2/Game/game.js"></script>
+    <script src="/V2/Game/reset.js"></script>
+    <script src="/V2/Level/levelsEnabler.js"></script>
+    <footer>
+        <p class="footerText">Hidden Path - Memory Game V2 <br>
+            Author - Gabriel Botelho
+        </p>
+    </footer>
+</html>
