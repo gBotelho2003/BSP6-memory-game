@@ -15,7 +15,34 @@
     </head>
     <body>
         <button class="back-btn" onclick="location.href='/V1/MainPage/mainPage.html'">← Back</button>
-        <p>Tutorial here....</p>
+        
+
+        <div class="rules">
+
+            <ul class="rules-list">
+                <li>3x3 Grid</li>
+                <li>Quick Flash of number sequence</li>
+                <li>Select the numbers by order  </li>
+                <li><b> <span style="color: orange;">orange cell</span> </b> means the cell contains a number but not the correct one -5pts</li>
+                <li>Correct guess: number will appear and cell will be <b> <span style="color: green;">green</span> </b> +10pts </li>
+                <li>Sequences get rewarded 10*sequence</li>
+                <li>Empty cell will be marked <b> <span style="color: red;">red</span> </b> with an X in it -10pts  </li>
+                <li>Timer runs out: score/2</li>
+            </ul>
+
+            <h2>Tutorial:</h2>
+            <video controls>
+                
+                <source src="/Puzzle-Game-V3/video/Tutorial-puzzle-game.mp4" type="video/mp4">
+
+            </video>
+
+
+
+
+        </div>
+
+
 
         <div class="playButton">
             <button type="button" id="play" onclick="location.href='/V1/Level/levelPage.html'">Play!</button>

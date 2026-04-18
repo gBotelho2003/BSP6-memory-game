@@ -43,9 +43,41 @@ function difficulty(lvl) {
 
 }
 
+
+function initFakeLeaderboard(level) {
+    if (localStorage.getItem(`leaderboardSeeded_level${level}`)) return;
+
+    const fakeEntries = {
+        1: [
+            { name: "Gabriel", time: "00:11", score: 120 },
+            { name: "Bruno",   time: "00:10", score: 105 },
+            { name: "Jon",     time: "00:09", score: 95  },
+            { name: "Ana",     time: "00:07", score: 85  },
+            { name: "Mike",    time: "00:05", score: 85  },
+        ],
+        2: [
+            { name: "Sara",  time: "00:15", score: 160 },
+            { name: "Lucas", time: "00:14", score: 140 },
+            { name: "Emma",  time: "00:12", score: 125 },
+            { name: "Noah",  time: "00:10", score: 110 },
+            { name: "Mia",   time: "00:08", score: 95  },
+        ],
+        3: [
+            { name: "Alex",  time: "00:20", score: 210 },
+            { name: "Chris", time: "00:18", score: 190 },
+            { name: "Maya",  time: "00:15", score: 170 },
+            { name: "Ryan",  time: "00:12", score: 150 },
+            { name: "Zoe",   time: "00:10", score: 130 },
+        ],
+    };
+
+    localStorage.setItem(`leaderboard_level${level}`, JSON.stringify(fakeEntries[level]));
+    localStorage.setItem(`leaderboardSeeded_level${level}`, "true");
+}
+
 function saveToLeaderboard(score, remainingTime) {
     let playerName = localStorage.getItem("playerName") || "Anonymous";
-
+    let level = localStorage.getItem("currentLevel");
     // format time as MM:SS
     let minutes = Math.floor(remainingTime / 60);
     let seconds = remainingTime % 60;
@@ -53,7 +85,7 @@ function saveToLeaderboard(score, remainingTime) {
         String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
 
     // get old leaderboard or empty array
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+     let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
 
     // add new score
     leaderboard.push({
@@ -69,11 +101,12 @@ function saveToLeaderboard(score, remainingTime) {
     leaderboard = leaderboard.slice(0, 10);
 
     // save back
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+    localStorage.setItem(`leaderboard_level${level}`, JSON.stringify(leaderboard));
 }
 
 function loadLeaderboard() {
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let level = localStorage.getItem("currentLevel");
+    let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
     let leaderboardContainer = document.getElementById("leaderboardRows");
 
     if (!leaderboardContainer) return;
@@ -96,10 +129,10 @@ function loadLeaderboard() {
 
 // Check if we are on a game page and start the game
 window.onload = () => {
-
-    loadLeaderboard();
-
     const level = localStorage.getItem("currentLevel");
+    initFakeLeaderboard(parseInt(level));
+
+    loadLeaderboard(level);
     // Ensure we have a level and we are on a page with a grid
     if (level && document.querySelector('.grid3by3')) {
         startGame(parseInt(level));
@@ -109,6 +142,12 @@ window.onload = () => {
 
 // starts the game by calling necessary functions 
 function startGame(level) {
+
+    // reset the points
+    score=0;
+    // prevent clicking on the grid before the sequence is shown
+    let sequenceVisible = true;
+
 
     // get all the cells from the grid
     const cells = document.querySelectorAll('.item');
@@ -151,6 +190,7 @@ function startGame(level) {
 
     function handlePlayerClick(index) {
         if (!gameStarted) return;
+        if (sequenceVisible) return; 
         playerSequence.push(index);
 
         console.log("User clicked:", playerSequence);
@@ -219,6 +259,7 @@ function startGame(level) {
             cells.forEach(cell => {
                 cell.textContent = "";
             });
+            sequenceVisible = false;
         }, displayTime); // visible for 2 seconds
     }
 
@@ -325,6 +366,17 @@ function startGame(level) {
 
         message.textContent = `Score: ${score} | Time Left: ${remainingTime}s`;
         popup.classList.remove("hidden");
+        levelComplete(level);
+    }
+
+    function levelComplete(lvl) {
+        if(lvl == 1){
+            localStorage.setItem("enableLevel2", "true");
+        }
+        if(lvl == 2){
+            localStorage.setItem("enableLevel3", "true");
+        }
+
     }
 
 
