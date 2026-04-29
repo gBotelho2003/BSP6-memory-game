@@ -241,13 +241,13 @@ function startGame(level) {
         });
 
         if (level == 1) {
-            hideSequence(1000);
+            hideSequence(750);
         }
         else if (level == 2) {
-            hideSequence(1500);
+            hideSequence(1000);
         }
         else if (level == 3) {
-            hideSequence(2000);
+            hideSequence(1500);
         }
 
     }
