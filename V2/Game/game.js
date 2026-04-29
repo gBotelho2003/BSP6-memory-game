@@ -50,24 +50,24 @@ function initFakeLeaderboard(level) {
     const fakeEntries = {
         1: [
             { name: "Gabriel", time: "00:11", score: 120 },
-            { name: "Bruno",   time: "00:10", score: 105 },
-            { name: "Jon",     time: "00:09", score: 95  },
-            { name: "Ana",     time: "00:07", score: 85  },
-            { name: "Mike",    time: "00:05", score: 85  },
+            { name: "Bruno", time: "00:10", score: 105 },
+            { name: "Jon", time: "00:09", score: 95 },
+            { name: "Ana", time: "00:07", score: 85 },
+            { name: "Mike", time: "00:05", score: 85 },
         ],
         2: [
-            { name: "Sara",  time: "00:15", score: 160 },
+            { name: "Sara", time: "00:15", score: 160 },
             { name: "Lucas", time: "00:14", score: 140 },
-            { name: "Emma",  time: "00:12", score: 125 },
-            { name: "Noah",  time: "00:10", score: 110 },
-            { name: "Mia",   time: "00:08", score: 95  },
+            { name: "Emma", time: "00:12", score: 125 },
+            { name: "Noah", time: "00:10", score: 110 },
+            { name: "Mia", time: "00:08", score: 95 },
         ],
         3: [
-            { name: "Alex",  time: "00:20", score: 210 },
+            { name: "Alex", time: "00:20", score: 210 },
             { name: "Chris", time: "00:18", score: 190 },
-            { name: "Maya",  time: "00:15", score: 170 },
-            { name: "Ryan",  time: "00:12", score: 150 },
-            { name: "Zoe",   time: "00:10", score: 130 },
+            { name: "Maya", time: "00:15", score: 170 },
+            { name: "Ryan", time: "00:12", score: 150 },
+            { name: "Zoe", time: "00:10", score: 130 },
         ],
     };
 
@@ -85,7 +85,7 @@ function saveToLeaderboard(score, remainingTime) {
         String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
 
     // get old leaderboard or empty array
-     let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
+    let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
 
     // add new score
     leaderboard.push({
@@ -144,7 +144,7 @@ window.onload = () => {
 function startGame(level) {
 
     // reset the points
-    score=0;
+    score = 0;
     // prevent clicking on the grid before the sequence is shown
     let sequenceVisible = true;
 
@@ -166,12 +166,20 @@ function startGame(level) {
         timer = setInterval(() => {
             remainingTime--;
             updateTimerDisplay();
+            
+
+            const overlay = document.getElementById("stressOverlay");
+
+            if (remainingTime === 6) {
+                overlay.classList.add("active");
+            }
 
             if (remainingTime <= 0) {
                 clearInterval(timer);
                 gameStarted = false;
                 calculateScore("timeOut");
                 showLevelCompletePopup(false);
+                document.getElementById("stressOverlay").classList.remove("active");
             }
         }, 1000);
     }
@@ -190,7 +198,7 @@ function startGame(level) {
 
     function handlePlayerClick(index) {
         if (!gameStarted) return;
-        if (sequenceVisible) return; 
+        if (sequenceVisible) return;
         playerSequence.push(index);
 
         console.log("User clicked:", playerSequence);
@@ -370,10 +378,10 @@ function startGame(level) {
     }
 
     function levelComplete(lvl) {
-        if(lvl == 1){
+        if (lvl == 1) {
             localStorage.setItem("enableLevel2", "true");
         }
-        if(lvl == 2){
+        if (lvl == 2) {
             localStorage.setItem("enableLevel3", "true");
         }
 
