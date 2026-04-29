@@ -201,13 +201,13 @@ function startGame(level) {
 
     if (level == 1) {
         length = 4;
-        timeLimit = 15;
+        timeLimit = 10;
     } else if (level == 2) {
         length = 5;
-        timeLimit = 20;
+        timeLimit = 15;
     } else if (level == 3) {
         length = 7;
-        timeLimit = 25;
+        timeLimit = 20;
     }
     generateSequence(length);
     startTimer(timeLimit);
