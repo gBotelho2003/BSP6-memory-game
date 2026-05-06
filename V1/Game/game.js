@@ -11,6 +11,13 @@ let remainingTime = 0;
 // correct clicks in a row 
 let inARow = 0;
 
+// list that will store the stats of each level in local storage
+let stats = JSON.parse(localStorage.getItem("stats")) || {
+    level1:{player:"", points:"", time:"",currLevel:""},
+    level2:{player:"", points:"", time:"" ,currLevel:""},
+    level3:{player:"", points:"", time:"",currLevel:"" }
+};
+
 function difficulty(lvl) {
 
     let playerName = localStorage.getItem("playerName");
@@ -25,11 +32,17 @@ function difficulty(lvl) {
         }
 
         localStorage.setItem("playerName", playerName.trim());
+        // for end stats
+        localStorage.setItem("player", playerName.trim());
     }
 
 
     // store level 
     localStorage.setItem("currentLevel", lvl);
+
+    // end stats
+    localStorage.setItem("currLevel", lvl);
+
     if (lvl == 1) {
         window.location.href = "/V1/Game/level1Page.html";
 
@@ -93,6 +106,10 @@ function saveToLeaderboard(score, remainingTime) {
         time: formattedTime,
         score: score
     });
+
+    localStorage.setItem("points", score);
+    localStorage.setItem("time",formattedTime);
+    saveStats(level);
 
     // sort descending by score
     leaderboard.sort((a, b) => b.score - a.score);
@@ -370,6 +387,7 @@ function startGame(level) {
     }
 
     function levelComplete(lvl) {
+        saveStats(lvl);
         if(lvl == 1){
             localStorage.setItem("enableLevel2", "true");
         }
@@ -379,8 +397,109 @@ function startGame(level) {
 
     }
 
+    // functiom to store the stats of each level
+    function saveStats(currLevel){
 
+        const player = localStorage.getItem("player");
+        const time = localStorage.getItem("time");
+        const points = localStorage.getItem("points");
+
+        if(currLevel== 1){
+            stats["level1"].player = player;
+            stats["level1"].points = points;
+            stats["level1"].time = time;
+            stats["level1"].currLevel = currLevel;
+        }
+        if(currLevel== 2){
+            stats["level2"].player = player;
+            stats["level2"].points = points;
+            stats["level2"].time = time;
+            stats["level2"].currLevel = currLevel;
+        }
+        if(currLevel== 3){
+            stats["level3"].player = player;
+            stats["level3"].points = points;
+            stats["level3"].time = time;
+            stats["level3"].currLevel = currLevel;
+        }
+
+        // add new info to the stats list
+        localStorage.setItem("stats", JSON.stringify(stats));
+
+    }
+    // verify if it is working
+    console.log(stats);
 
 }
+// functions to create csv file and download it for easy access
+function openStatsAsCSV() {
+    const stats = JSON.parse(localStorage.getItem("stats")) || {
+        level1:{player:"", points:"", time:"",currLevel:""},
+        level2:{player:"", points:"", time:"" ,currLevel:""},
+        level3:{player:"", points:"", time:"",currLevel:"" }
+    };
+
+    const rows = [
+        ["Level", "Player Name", "Points", "Time"],
+        ["Level 1", stats.level1.player, stats.level1.points, stats.level1.time],
+        ["Level 2", stats.level2.player, stats.level2.points, stats.level2.time],
+        ["Level 3", stats.level3.player, stats.level3.points, stats.level3.time]
+    ];
+
+    const csvContent = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const tempLink = document.createElement('a');
+    tempLink.href = url;
+    // Set the filename here. This forces a download!
+    tempLink.download = 'Game_Stats.csv'; 
+    
+    // Simulate a click on the link
+    tempLink.click();
+
+    // Clean up the temporary URL to free memory
+    URL.revokeObjectURL(url);
+}
+
+// Attach listener after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("downloadStats");
+    if (!btn) return;
+
+    let holdTimer;
+    let isUnlocked = false;
+
+    btn.classList.add("locked");
+
+    btn.addEventListener("mousedown", () => {
+        holdTimer = setTimeout(() => {
+            isUnlocked = true;
+            btn.disabled = false;
+            btn.classList.remove("locked");
+            btn.classList.add("unlocked");
+            btn.textContent = "Download Stats";
+            console.log("Stats unlocked!");
+        }, 2000); // 2 seconds
+    });
+
+    btn.addEventListener("mouseup", () => {
+        clearTimeout(holdTimer);
+    });
+
+    btn.addEventListener("mouseleave", () => {
+        clearTimeout(holdTimer);
+    });
+
+    btn.addEventListener("click", (e) => {
+        if (!isUnlocked) {
+            e.preventDefault();
+            console.log("Hold to unlock stats...");
+            return;
+        }
+
+        openStatsAsCSV();
+    });
+});
 
 

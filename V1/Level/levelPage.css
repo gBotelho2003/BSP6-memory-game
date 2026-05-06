@@ -5,8 +5,10 @@
 .button-wrapper {
   display: flex;
   justify-content: center; 
+  flex-direction: column;
   align-items: center;     
   height: 100vh;
+  gap: 40px; 
 }
 
 
@@ -28,3 +30,27 @@ p{
     text-align: center;
     font-size: 2.5rem;
 }
+
+#downloadStats {
+  font-size: 20px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #555;
+  background: rgba(255,255,255,0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* locked look */
+#downloadStats.locked {
+  opacity: 0.5;
+}
+
+/* when ready */
+#downloadStats.unlocked {
+  color: hsl(34, 94%, 51%);
+  border-color: hsl(34, 94%, 51%);
+}
+
+
