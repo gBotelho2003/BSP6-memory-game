@@ -1,0 +1,568 @@
+
+
+
+// core variables
+let correctSequence = [];
+let playerSequence = [];
+let score = 0;
+let gameStarted = false;
+let timer;
+let remainingTime = 0;
+// correct clicks in a row 
+let inARow = 0;
+
+// hint variables 
+
+let hintCooldown = false;
+let hintCooldownTime = 3000;
+
+
+// list that will store the stats of each level in local storage
+let stats = JSON.parse(localStorage.getItem("stats")) || {
+    level1: { player: "", points: "", time: "", currLevel: "" },
+    level2: { player: "", points: "", time: "", currLevel: "" },
+    level3: { player: "", points: "", time: "", currLevel: "" }
+};
+
+
+function difficulty(lvl) {
+
+    let playerName = localStorage.getItem("playerName");
+
+    // ask for name only once
+    if (!playerName) {
+        playerName = prompt("Please enter your name to play:");
+
+        if (!playerName || playerName.trim() === "") {
+            alert("You need to enter a name to play.");
+            return;
+        }
+
+        localStorage.setItem("playerName", playerName.trim());
+        // for end stats
+        localStorage.setItem("player", playerName.trim());
+    }
+
+
+    // store level 
+    localStorage.setItem("currentLevel", lvl);
+    // end stats
+    localStorage.setItem("currLevel", lvl);
+
+    if (lvl == 1) {
+        window.location.href = "/V3/Game/level1Page.html";
+
+    }
+    else if (lvl == 2) {
+        window.location.href = "/V3/Game/level2Page.html";
+    }
+    else if (lvl == 3) {
+        window.location.href = "/V3/Game/level3Page.html";
+    }
+
+}
+
+
+function initFakeLeaderboard(level) {
+    if (localStorage.getItem(`leaderboardSeeded_level${level}`)) return;
+
+    const fakeEntries = {
+        1: [
+            { name: "Gabriel", time: "00:11", score: 120 },
+            { name: "Bruno", time: "00:10", score: 105 },
+            { name: "Jon", time: "00:09", score: 95 },
+            { name: "Ana", time: "00:07", score: 85 },
+            { name: "Mike", time: "00:05", score: 85 },
+        ],
+        2: [
+            { name: "Sara", time: "00:15", score: 160 },
+            { name: "Lucas", time: "00:14", score: 140 },
+            { name: "Emma", time: "00:12", score: 125 },
+            { name: "Noah", time: "00:10", score: 110 },
+            { name: "Mia", time: "00:08", score: 95 },
+        ],
+        3: [
+            { name: "Alex", time: "00:20", score: 210 },
+            { name: "Chris", time: "00:18", score: 190 },
+            { name: "Maya", time: "00:15", score: 170 },
+            { name: "Ryan", time: "00:12", score: 150 },
+            { name: "Zoe", time: "00:10", score: 130 },
+        ],
+    };
+
+    localStorage.setItem(`leaderboard_level${level}`, JSON.stringify(fakeEntries[level]));
+    localStorage.setItem(`leaderboardSeeded_level${level}`, "true");
+}
+
+function saveToLeaderboard(score, remainingTime) {
+    let playerName = localStorage.getItem("playerName") || "Anonymous";
+    let level = localStorage.getItem("currentLevel");
+    // format time as MM:SS
+    let minutes = Math.floor(remainingTime / 60);
+    let seconds = remainingTime % 60;
+    let formattedTime =
+        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+
+    // get old leaderboard or empty array
+    let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
+
+    // add new score
+    leaderboard.push({
+        name: playerName,
+        time: formattedTime,
+        score: score
+    });
+
+    localStorage.setItem("points", score);
+    localStorage.setItem("time", formattedTime);
+    saveStats(level);
+
+    // sort descending by score
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // keep only top 10
+    leaderboard = leaderboard.slice(0, 10);
+
+    // save back
+    localStorage.setItem(`leaderboard_level${level}`, JSON.stringify(leaderboard));
+}
+
+function loadLeaderboard() {
+    let level = localStorage.getItem("currentLevel");
+    let leaderboard = JSON.parse(localStorage.getItem(`leaderboard_level${level}`)) || [];
+    let leaderboardContainer = document.getElementById("leaderboardRows");
+
+    if (!leaderboardContainer) return;
+
+    leaderboardContainer.innerHTML = "";
+
+    leaderboard.forEach((entry) => {
+        let row = document.createElement("div");
+        row.classList.add("leaderboard-row");
+
+        row.innerHTML = `
+            <span>${entry.name}</span>
+            <span>${entry.time}</span>
+            <span>${entry.score}</span>
+        `;
+
+        leaderboardContainer.appendChild(row);
+    });
+}
+
+// Check if we are on a game page and start the game
+window.onload = () => {
+    const level = localStorage.getItem("currentLevel");
+    initFakeLeaderboard(parseInt(level));
+
+    loadLeaderboard(level);
+    // Ensure we have a level and we are on a page with a grid
+    if (level && document.querySelector('.grid3by3')) {
+        startGame(parseInt(level));
+    }
+};
+
+
+// starts the game by calling necessary functions 
+function startGame(level) {
+
+    // reset the points
+    score = 0;
+    // prevent clicking on the grid before the sequence is shown
+    let sequenceVisible = true;
+
+
+    // get all the cells from the grid
+    const cells = document.querySelectorAll('.item');
+
+    // add event listener to the hint button
+    const hintButton = document.getElementById("hintButton");
+
+    if (hintButton) {
+        hintButton.addEventListener("click", useHint);
+    }
+
+    gameStarted = true;
+    cells.forEach((cell, index) => {
+        cell.addEventListener("click", () => {
+            handlePlayerClick(index, cells, level);
+        });
+    });
+
+    // timer function for the levels 
+    function startTimer(timeLimit) {
+        remainingTime = timeLimit;
+        updateTimerDisplay();
+
+        timer = setInterval(() => {
+            remainingTime--;
+            updateTimerDisplay();
+
+
+            const grid = document.querySelector(".grid3by3");
+
+            if (remainingTime === 6) {
+                grid.classList.add("grid-stress");
+            }
+
+            if (remainingTime <= 0) {
+                clearInterval(timer);
+                gameStarted = false;
+                calculateScore("timeOut");
+                showLevelCompletePopup(false);
+                document.querySelector(".grid3by3").classList.remove("grid-stress");
+            }
+        }, 1000);
+    }
+
+    // live update of the timer display
+    function updateTimerDisplay() {
+        let minutes = Math.floor(remainingTime / 60);
+        let seconds = remainingTime % 60;
+
+        // format as 00:09 instead of 0:9
+        let formattedTime =
+            String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+
+        document.getElementById("timer").textContent = formattedTime;
+    }
+
+    function handlePlayerClick(index) {
+        if (!gameStarted) return;
+        if (sequenceVisible) return;
+        playerSequence.push(index);
+
+        console.log("User clicked:", playerSequence);
+
+        checkSequence();
+    }
+
+
+    if (level == 1) {
+        length = 4;
+        timeLimit = 10;
+    } else if (level == 2) {
+        length = 5;
+        timeLimit = 15;
+    } else if (level == 3) {
+        length = 7;
+        timeLimit = 20;
+    }
+    generateSequence(length);
+    startTimer(timeLimit);
+
+
+    // length is the amount of numbers to guess 
+    function generateSequence(length) {
+
+        correctSequence = [];
+        // generate random indices until we have the correct amount of numbers to guess
+        while (correctSequence.length < length) {
+
+            let randomIndex = Math.floor(Math.random() * cells.length);
+
+            // verify that we do not get duplicates in the sequence
+            if (!correctSequence.includes(randomIndex)) {
+                correctSequence.push(randomIndex);
+            }
+        }
+        displaySequence();
+        console.log(correctSequence);
+    }
+
+
+    function displaySequence() {
+
+        // loop through the correct sequence and add the 'active' class to the corresponding cells with a delay
+        correctSequence.forEach((index, i) => {
+            // display the order number on the cell
+            cells[index].textContent = i + 1;
+        });
+
+        if (level == 1) {
+            hideSequence(750);
+        }
+        else if (level == 2) {
+            hideSequence(1000);
+        }
+        else if (level == 3) {
+            hideSequence(1500);
+        }
+
+    }
+
+    // hide the sequence after a short delay
+    function hideSequence(displayTime) {
+        // loop through the correct sequence and remove the 'active' class from the corresponding cells
+        setTimeout(() => {
+            cells.forEach(cell => {
+                cell.textContent = "";
+            });
+            sequenceVisible = false;
+        }, displayTime); // visible for 2 seconds
+    }
+
+    // hint function to show the next correct cell
+    function useHint() {
+
+        if (!gameStarted || sequenceVisible || hintCooldown) return;
+
+        hintCooldown = true;
+        hintButton.disabled = true;
+
+        // next correct position
+        let nextIndex = correctSequence[playerSequence.length];
+        let hintCell = cells[nextIndex];
+
+        // yellow highlight
+        let originalColor = hintCell.style.backgroundColor;
+        hintCell.style.border = "4px solid yellow";
+        hintCell.style.boxShadow = "0 0 15px yellow";
+
+        setTimeout(() => {
+            hintCell.style.border = "2px solid rgb(250, 248, 248)";
+            hintCell.style.boxShadow = "none";
+        }, 1500);
+
+        // update score for using hint
+        calculateScore("hint",0);
+        inARow = 0; 
+
+        // simple cooldown without countdown text
+        setTimeout(() => {
+            hintCooldown = false;
+            hintButton.disabled = false;
+            hintButton.textContent = "Hint";
+        }, 3000);
+    }
+
+    // check the player's sequence against the correct sequence
+    function checkSequence() {
+        let currentClick = playerSequence.length - 1;
+        let clickedIndex = playerSequence[currentClick];
+        // save the clicked cell so when it gets popped i still can be accessed to change its color
+        let clickedCell = cells[clickedIndex];
+
+
+
+        if (clickedIndex !== correctSequence[currentClick]) {
+
+            if (correctSequence.includes(clickedIndex)) {
+                // this means the cell contains a number so we only blink it red so they can retry it again 
+                let originalColor = cells[playerSequence[currentClick]].style.backgroundColor;
+                clickedCell.style.backgroundColor = "orange";
+                setTimeout(() => {
+                    clickedCell.style.backgroundColor = originalColor;
+                }, 500);
+                console.log("Wrong click, try again!");
+
+                calculateScore("wrongPath");
+            }
+            else {
+                // color the cell red to indicate a wrong click
+                clickedCell.style.backgroundColor = "red";
+                clickedCell.textContent = "X";
+                console.log("Wrong again!");
+                calculateScore("wrongEmpty");
+            }
+
+            // wrong click so reset  
+            inARow = 0;
+
+            // take the wrong number out of the player sequence
+            playerSequence.pop();
+        }
+        else {
+            // color the cell green to indicate a correct click
+            cells[playerSequence[currentClick]].style.backgroundColor = "green";
+            // show the order number on the cell
+            cells[playerSequence[currentClick]].textContent = currentClick + 1;
+
+            // update correct clicks in a row and calculate score
+            inARow++;
+            calculateScore("correct", inARow);
+        }
+
+        if (
+            currentClick === correctSequence.length - 1 &&
+            clickedIndex === correctSequence[currentClick]
+        ) {
+            clearInterval(timer);
+            calculateScore("timerBonus", remainingTime);
+            gameStarted = false;
+            showLevelCompletePopup(true);
+            saveToLeaderboard(score, remainingTime);
+            loadLeaderboard();
+
+
+
+        }
+    }
+
+    // points calculation to be refined
+    function calculateScore(action, value = 0) {
+
+        switch (action) {
+            case "correct":
+                score += 10 * value;
+                break;
+            case "timerBonus":
+                score += value * 5;
+                break;
+            case "timeOut":
+                score = score / 2;
+                break;
+            case "wrongEmpty":
+                score -= 10;
+                break;
+            case "wrongPath":
+                score -= 5;
+                break;
+            case "hint":
+                score -= 20; // only -10 since correct +10 
+                break;
+            default:
+                score += 0; // default case, no points
+        }
+        if (score < 0) score = 0; // prevent negative scores
+
+        const scoreDisplay = document.getElementById("playerScore");
+        if (scoreDisplay) {
+            scoreDisplay.textContent = `${score}`;
+        }
+    }
+    function showLevelCompletePopup(success) {
+        const timeOver = document.getElementById("timeOver");
+        if (!success) {
+            timeOver.textContent = "Time's up!";
+
+        }
+        const popup = document.getElementById("levelPopup");
+        const message = document.getElementById("popupMessage");
+
+
+        message.textContent = `Score: ${score} | Time Left: ${remainingTime}s`;
+        popup.classList.remove("hidden");
+        levelComplete(level);
+    }
+
+    function levelComplete(lvl) {
+        saveStats(lvl);
+        if (lvl == 1) {
+            localStorage.setItem("enableLevel2", "true");
+
+        }
+        if (lvl == 2) {
+            localStorage.setItem("enableLevel3", "true");
+        }
+
+    }
+
+    // functiom to store the stats of each level
+    function saveStats(currLevel) {
+
+        const player = localStorage.getItem("player");
+        const time = localStorage.getItem("time");
+        const points = localStorage.getItem("points");
+
+        if (currLevel == 1) {
+            stats["level1"].player = player;
+            stats["level1"].points = points;
+            stats["level1"].time = time;
+            stats["level1"].currLevel = currLevel;
+        }
+        if (currLevel == 2) {
+            stats["level2"].player = player;
+            stats["level2"].points = points;
+            stats["level2"].time = time;
+            stats["level2"].currLevel = currLevel;
+        }
+        if (currLevel == 3) {
+            stats["level3"].player = player;
+            stats["level3"].points = points;
+            stats["level3"].time = time;
+            stats["level3"].currLevel = currLevel;
+        }
+
+        // add new info to the stats list
+        localStorage.setItem("stats", JSON.stringify(stats));
+
+    }
+    // verify if it is working
+    console.log(stats);
+
+
+}
+
+// functions to create csv file and download it for easy access
+function openStatsAsCSV() {
+    const stats = JSON.parse(localStorage.getItem("stats")) || {
+        level1: { player: "", points: "", time: "", currLevel: "" },
+        level2: { player: "", points: "", time: "", currLevel: "" },
+        level3: { player: "", points: "", time: "", currLevel: "" }
+    };
+
+    const rows = [
+        ["Level", "Player Name", "Points", "Time"],
+        ["Level 1", stats.level1.player, stats.level1.points, stats.level1.time],
+        ["Level 2", stats.level2.player, stats.level2.points, stats.level2.time],
+        ["Level 3", stats.level3.player, stats.level3.points, stats.level3.time]
+    ];
+
+    const csvContent = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const tempLink = document.createElement('a');
+    tempLink.href = url;
+    // Set the filename here. This forces a download!
+    tempLink.download = 'Game_Stats.csv';
+
+    // Simulate a click on the link
+    tempLink.click();
+
+    // Clean up the temporary URL to free memory
+    URL.revokeObjectURL(url);
+}
+
+// Attach listener after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("downloadStats");
+    if (!btn) return;
+
+    let holdTimer;
+    let isUnlocked = false;
+
+    btn.classList.add("locked");
+
+    btn.addEventListener("mousedown", () => {
+        holdTimer = setTimeout(() => {
+            isUnlocked = true;
+            btn.disabled = false;
+            btn.classList.remove("locked");
+            btn.classList.add("unlocked");
+            btn.textContent = "Download Stats";
+            console.log("Stats unlocked!");
+        }, 2000); // 2 seconds
+    });
+
+    btn.addEventListener("mouseup", () => {
+        clearTimeout(holdTimer);
+    });
+
+    btn.addEventListener("mouseleave", () => {
+        clearTimeout(holdTimer);
+    });
+
+    btn.addEventListener("click", (e) => {
+        if (!isUnlocked) {
+            e.preventDefault();
+            console.log("Hold to unlock stats...");
+            return;
+        }
+
+        openStatsAsCSV();
+    });
+});
+
+
