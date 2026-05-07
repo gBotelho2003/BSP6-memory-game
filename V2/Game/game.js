@@ -343,9 +343,10 @@ function startGame(level) {
             clearInterval(timer);
             calculateScore("timerBonus", remainingTime);
             gameStarted = false;
+            showLevelCompletePopup(true);
             saveToLeaderboard(score, remainingTime);
             loadLeaderboard();
-            showLevelCompletePopup(true);
+            
 
 
         }
