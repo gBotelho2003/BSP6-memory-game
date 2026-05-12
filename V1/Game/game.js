@@ -62,25 +62,25 @@ function initFakeLeaderboard(level) {
 
     const fakeEntries = {
         1: [
-            { name: "Gabriel", time: "00:11", score: 120 },
-            { name: "Bruno",   time: "00:10", score: 105 },
-            { name: "Jon",     time: "00:09", score: 95  },
-            { name: "Ana",     time: "00:07", score: 85  },
-            { name: "Mike",    time: "00:05", score: 85  },
+            { name: "Gabe", time: "00:08", score: 140 },
+            { name: "Peter",   time: "00:06", score: 125 },
+            { name: "Jon",     time: "00:05", score: 105  },
+            { name: "Ana",     time: "00:05", score: 85  },
+            { name: "Mike",    time: "00:05", score: 75  },
         ],
         2: [
-            { name: "Sara",  time: "00:15", score: 160 },
-            { name: "Lucas", time: "00:14", score: 140 },
-            { name: "Emma",  time: "00:12", score: 125 },
-            { name: "Noah",  time: "00:10", score: 110 },
-            { name: "Mia",   time: "00:08", score: 95  },
+            { name: "Sara",  time: "00:13", score: 215 },
+            { name: "Lucas", time: "00:11", score: 180 },
+            { name: "Emma",  time: "00:10", score: 165 },
+            { name: "Noah",  time: "00:06", score: 120},
+            { name: "Mia",   time: "00:05", score: 95 },
         ],
         3: [
-            { name: "Alex",  time: "00:20", score: 210 },
-            { name: "Chris", time: "00:18", score: 190 },
-            { name: "Maya",  time: "00:15", score: 170 },
-            { name: "Ryan",  time: "00:12", score: 150 },
-            { name: "Zoe",   time: "00:10", score: 130 },
+            { name: "Alex",  time: "00:17", score: 360 },
+            { name: "Chris", time: "00:15", score: 210 },
+            { name: "Maya",  time: "00:13", score: 155 },
+            { name: "Ryan",  time: "00:11", score: 135 },
+            { name: "Zoe",   time: "00:10", score: 115},
         ],
     };
 
@@ -107,9 +107,7 @@ function saveToLeaderboard(score, remainingTime) {
         score: score
     });
 
-    localStorage.setItem("points", score);
-    localStorage.setItem("time",formattedTime);
-    saveStats(level);
+    
 
     // sort descending by score
     leaderboard.sort((a, b) => b.score - a.score);
@@ -335,6 +333,7 @@ function startGame(level) {
             calculateScore("timerBonus", remainingTime);
             gameStarted = false;
             saveToLeaderboard(score, remainingTime);
+            saveStats(level);
             loadLeaderboard();
             showLevelCompletePopup(true);
 
@@ -401,8 +400,14 @@ function startGame(level) {
     function saveStats(currLevel){
 
         const player = localStorage.getItem("player");
-        const time = localStorage.getItem("time");
-        const points = localStorage.getItem("points");
+        let minutes = Math.floor(remainingTime / 60);
+        let seconds = remainingTime % 60;
+
+        const time =
+            String(minutes).padStart(2, "0") + ":" +
+            String(seconds).padStart(2, "0");
+
+        const points = score;
 
         if(currLevel== 1){
             stats["level1"].player = player;
@@ -501,5 +506,3 @@ document.addEventListener("DOMContentLoaded", () => {
         openStatsAsCSV();
     });
 });
-
-

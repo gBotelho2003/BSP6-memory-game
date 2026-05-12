@@ -53,4 +53,24 @@ p{
   border-color: hsl(34, 94%, 51%);
 }
 
+#downloadStats,
+#reset {
+    opacity: 0;
+    background: transparent;
+    border: none;
+    color: transparent;
+    box-shadow: none;
+}
+
+body:hover #downloadStats,
+body:hover #reset {
+    opacity: 0.08;
+}
+
+#downloadStats:hover,
+#reset:hover {
+    opacity: 1;
+}
+    
+
 
