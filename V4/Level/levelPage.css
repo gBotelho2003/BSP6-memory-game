@@ -1,0 +1,76 @@
+.buttons{
+  display: flex;
+  gap: 150px;   
+}
+.button-wrapper {
+  display: flex;
+  justify-content: center; 
+  flex-direction: column;
+  align-items: center;     
+  height: 100vh;
+  gap: 40px; 
+}
+
+
+#level1, #level2, #level3, #reset {
+  padding: 15px 25px;
+  font-size: 30px;
+  font-family: "Lucida Console", "Courier New", monospace;
+  border: 2px solid #333;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+h1{
+    text-align: center;
+    padding-top: 50px;
+    font-size: 50px;
+}
+p{
+    text-align: center;
+    font-size: 2.5rem;
+}
+
+#downloadStats {
+  font-size: 20px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #555;
+  background: rgba(255,255,255,0.05);
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* locked look */
+#downloadStats.locked {
+  opacity: 0.5;
+}
+
+/* when ready */
+#downloadStats.unlocked {
+  color: hsl(34, 94%, 51%);
+  border-color: hsl(34, 94%, 51%);
+}
+
+#downloadStats,
+#reset {
+    opacity: 0;
+    background: transparent;
+    border: none;
+    color: transparent;
+    box-shadow: none;
+}
+
+body:hover #downloadStats,
+body:hover #reset {
+    opacity: 0.08;
+}
+
+#downloadStats:hover,
+#reset:hover {
+    opacity: 1;
+}
+    
+
+

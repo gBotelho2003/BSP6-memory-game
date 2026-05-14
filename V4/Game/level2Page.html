@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!--Link css files-->
+    <link rel="stylesheet" href="/V3/Game/gamePage.css">
+
+
+
+    <!--Title of the game-->
+    <title>Hidden Path</title>
+
+
+</head>
+
+<body>
+    <h1>Level 2</h1>
+
+    <div class="game-layout">
+
+        <div class="leaderboard">
+            <h2>Leaderboard</h2>
+
+            <div class="leaderboard-header">
+                <span>User</span>
+                <span>Time</span>
+                <span>Points</span>
+            </div>
+
+            <div id="leaderboardRows">
+
+            </div>
+        </div>
+
+        <div class="game-area">
+
+            <div class="top-bar">
+                <div class="timer">
+                    <p id="timer">00:00</p>
+                </div>
+
+                <div class="hint-container">
+                    <button id="hintButton">Hint</button>
+                </div>
+
+                <div class="score">
+                    <p id="playerScore">0</p>
+                </div>
+            </div>
+
+            <div class="grid3by3">
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+
+                <div class="item"></div>
+                <div class="item"></div>
+                <div class="item"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Level complete popup -->
+    <div id="levelPopup" class="popup-overlay hidden">
+        <div class="popup-box">
+            <h2>Level Complete!</h2>
+            <p id="timeOver"></p>
+            <p id="popupMessage"></p>
+
+            <div class="popup-buttons">
+                <button onclick="location.href='/V3/Level/levelPage.html'">Back to Levels</button>
+            </div>
+        </div>
+    </div>
+    <div id="stressOverlay"></div>
+</body>
+
+<script src="/V3/Game/game.js"></script>
+
+</html>
